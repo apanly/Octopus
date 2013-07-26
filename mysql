@@ -1,0 +1,7 @@
+create table ajk_admin_manager
+(
+    `MId` int(11) NOT NULL auto_increment,
+    UserName varchar(50),
+    UserPasswd varchar(50),
+    PRIMARY KEY  (`mid`)
+)

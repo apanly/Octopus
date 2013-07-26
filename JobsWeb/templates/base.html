@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job管理平台--Octopus</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="Job管理平台--Octopus">
+    <meta name="keywords" content="Job管理平台--Octopus">
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/static/css/docs.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+    <link href="/static/css/datetimepicker.css" rel="stylesheet">
+    {%block selfstyle %}{% endblock %}
+</head>
+
+<body>
+
+<!-- Navbar
+================================================== -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="/">Job管理平台</a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li class=""><a href="/home">Home</a></li>
+                    <li class="active">
+                        <a href="/joblist/">Jobs</a>
+                    </li>
+                    <li class="active">
+                        <a href="/tools/">Tools</a>
+                    </li>
+                    <li class="active">
+                        <a href="/logger">Logger</a>
+                    </li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li class="divider-vertical"></li>
+                    <li>
+                        <form class="form-search" id="searchjob" action="/joblist/">
+                            <input name="mutimode" type="text" class="input-medium search-query" placeholder="请输入jobid或者Job名称描述">
+                        </form>
+                    </li>
+                    <li><a href="/job/new/">新增</a></li>
+                    {% block userlogin %}{% endblock %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% block content %}{% endblock %}
+{% include 'pop.html' %}
+<!-- Footer
+================================================== -->
+<footer class="footer">
+    <p>&copy; Octopus--Job管理平台 developed By 2013 </p>
+</footer>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/layer/layer.min.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/function.js"></script>
+    <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+    {%block selfscript %}{% endblock %}
+</body>
+</html>

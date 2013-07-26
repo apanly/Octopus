@@ -1,0 +1,145 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+
+import os, sys, subprocess, commands, time, logging, logging.config
+import socket,struct,fcntl,atexit,pickle
+from signal import signal, SIGTERM
+
+from JobsScript.mysqlResource import mysqlOpe
+import JobsWeb.models
+
+
+__sql_list='SELECT * FROM alertjoblist WHERE runstat = 1 and run_status = 1 and is_manage=1 order by id desc'
+__sql_deps='SELECT * FROM alertjoblist WHERE id in (select depend_id from alertjobdepend WHERE job_id = %s)'
+__sql_info="SELECT run_status,job_runinterval,error_group,error_code,name FROM alertjoblist WHERE id=%s"
+__sql_job_update1="UPDATE alertjoblist set run_status=%d,job_first_start='%s' WHERE id=%s"
+__sql_job_update2="UPDATE alertjoblist set run_status=%d WHERE id=%s"
+__sql_log_insert="INSERT INTO alertjoblog (job_id,starttime,status) VALUES(%s,'%s',%s)"
+__sql_log_update="UPDATE alertjoblog SET status=%d,endtime='%s' WHERE id=%d"
+__sql_alert_insert="INSERT INTO alertlist(level_id,module_id,group_id,content,param,stat,created_time) VALUES(%d,%d,%d,'%s','%s',%d,'%s')"
+
+
+
+def atexit_removepid(pid_file):
+	try:
+		os.remove(pid_file)
+	except:
+		pass
+
+
+def main():
+    #阻止重复运行
+    pid_file='/tmp/jqueuecons.pid'
+    if os.path.isfile(pid_file):
+        logger.info("The program is running")
+        return 1
+    else:
+        signal(SIGTERM, lambda signum, stack_frame: exit(1))
+        atexit.register(lambda:atexit_removepid(pid_file))
+        fd=os.open(pid_file,os.O_CREAT|os.O_EXCL|os.O_RDWR)
+        os.write(fd,"%s\n" % os.getpid())
+        os.close(fd)
+
+    #读取机器信息
+    path=os.path.split(os.path.realpath(__file__))[0]
+    db=0
+    try:
+        db=open(path+'/host','r')
+        host,evn=pickle.load(db)
+        db.close()
+    except:
+        pass
+    if not db:
+        logger.info("please register this host")
+        return 1
+
+    #检查状态
+    listinfo=JobsWeb.models.Alertjoblist.objects.raw(__sql_list)
+    for t in listinfo:
+        #检查依赖
+        if t.job_type == 3:
+            ds=JobsWeb.models.Alertjoblist.objects.raw(__sql_deps % t.id)
+            for d in ds:
+                if d.status == 2:
+                    continue
+        #检查时间
+        if t.job_first_start>=time.time():
+            continue
+        #启子进程中运行
+        logger.info("get a task: id %s" % t.id)
+        pid = os.fork()
+        if pid==0:
+            jobid=t.id
+            #atexit.unregister()
+            #阻止重复运行
+            pid_file='/tmp/job_%s.pid' % jobid
+            if os.path.isfile(pid_file):
+                customlog("job id:%s  is running"%jobid)
+                return(1)
+            else:
+                atexit.register(lambda:atexit_removepid(pid_file))
+                fd=os.open(pid_file,os.O_CREAT|os.O_EXCL|os.O_RDWR)
+                os.write(fd,"%s\n" % str(os.getpid()))
+                os.close(fd)
+            #get lock
+            mysqltarget=mysqlOpe()
+            onejobnfo=mysqltarget.selectone(__sql_info % jobid)
+            '''job的一些信息'''
+            if onejobnfo[0]==1:
+                mysqltarget.update(__sql_job_update2 %(2, jobid))
+            else:
+                return(1)
+            customlog("this task id:%s  will run " % jobid)
+            customlog("command: " + t.command + " | python JobsScript/logger.py id_%s" % jobid)
+            logid=mysqltarget.insert(__sql_log_insert %(jobid,getLocalDate(),0))
+            mysqltarget.close()
+            #status = os.system(t.command + " | python JobsScript/logger.py id_%s" % jobid) >> 8
+            status = os.system(t.command)>>8#status, output = commands.getstatusoutput(t.command + " | python JobsScript/logger.py")
+            customlog("${PIPESTATUS[*]}: %s: %s" % (str(status),t.command))
+            mysqltarget=mysqlOpe()
+            job_runinterval=onejobnfo[1]
+            runtime=job_runinterval*60+time.time()
+            groupid=onejobnfo[2]
+            errorid=onejobnfo[3]
+            jobname=onejobnfo[4]
+            if job_runinterval==0:
+                mysqltarget.update(__sql_job_update2 %(3, jobid))
+            else:
+                if status:#job出错了
+                    alertcontent="job id:%s(%s) get a error,returnCode is %d"% (t.id ,jobname,status)
+                    mysqltarget.update(__sql_log_update%(1,getLocalDate(),int(logid)))
+                    mysqltarget.insert(__sql_alert_insert%(1,errorid,groupid,alertcontent,'',0,getLocalDate()))
+                    customlog(alertcontent)
+                else:
+                    mysqltarget.update(__sql_log_update%(0,getLocalDate(),int(logid)))
+                    customlog("job id:%s is done"%t.id)
+                mysqltarget.update(__sql_job_update1 %(1,runtime, jobid)) #job下一次运行时间
+                #mysqltarget.update(__sql_job_update2 %(1, jobid))
+            mysqltarget.close()
+            #完成
+            return(0)
+        elif pid>0:
+            #os.waitpid(pid,os.WNOHANG)
+            os.waitpid(-1, os.WNOHANG)
+            pass
+        else:
+            pass
+
+
+
+def customlog(msg):
+    logger.info(msg)
+
+
+def getLocalDate():
+    return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+
+if __name__ == "__main__":
+	path=os.path.split(os.path.realpath(__file__))[0]
+	logging.config.fileConfig(path+"/../JobsProject/log4p.conf")
+	logger = logging.getLogger("main")
+	sys.exit(main())
+
+
+__all__ = []

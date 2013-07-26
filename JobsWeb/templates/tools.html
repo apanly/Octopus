@@ -1,0 +1,46 @@
+{% extends "toolsbase.html" %}
+{% block userlogin %}
+  {{ usertem }}
+{% endblock %}
+{% block content %}
+        <div class="container marginextra">
+            <div class="row">
+                <div class="span2">
+                    <ul class="nav nav-list bs-docs-sidenav">
+                        <li class="active"><a href="/tools/runlist"><i class="icon-chevron-right"></i>JOB运行列表</a></li>
+                        <li><a href="/tools/errorlist"><i class="icon-chevron-right"></i>JOB故障列表</a></li>
+                        <li><a href="/tools/state"><i class="icon-chevron-right"></i>JOB统计</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/tools/alertlist"><i class="icon-chevron-right"></i>JOB报警日志</a></li>
+                        <li><a href="/tools/alertuserlist"><i class="icon-chevron-right"></i>JOB报警用户组</a></li>
+                    </ul>
+                </div>
+                <div class="span10">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Job编号</th>
+                            <th>Job名称</th>
+                            <th>服务器</th>
+                            <th>开始时间</th>
+                            <th>运行时间</th>
+                            <th>负责人</th>
+                            <th>调度状态</th>
+                        </tr>
+                        </thead>
+                        <tbody id="project_table">
+                        <tr>
+                            <td>14845</td>
+                            <td>solrBuild</td>
+                            <td>Xapp10-010</td>
+                            <td>每天2013-06-07</td>
+                            <td>每天2013-06-07</td>
+                            <td>郭威</td>
+                            <td>可以运行</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+{% endblock %}

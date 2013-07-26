@@ -1,0 +1,6 @@
+use jobs_db;
+
+truncate table ajk_admin_manager;
+
+insert into ajk_admin_manager(username, userpasswd)
+values('root', 'ZTEwYWRjMzk0OWjhNTlhYmjlNTZlMDU3ZjIwZjg4M2U=');

@@ -1,0 +1,13 @@
+{% if uid %}
+<li class="dropdown" id="fat-menu">
+    <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">
+        {{ username }}<b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        <li><a href="/user/setting/"><i class="icon-wrench"></i> 设置</a></li>
+        <li class="divider"></li>
+         <li><a href="javascript:void(0);" class="loginout"><i class="icon-off"></i> 退出</a></li>
+    </ul>
+</li>
+{% else %}
+<li><a id="userlogin" href="javascript:void(0);">登录</a></li>
+{% endif %}

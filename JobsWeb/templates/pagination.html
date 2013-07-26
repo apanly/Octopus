@@ -1,0 +1,21 @@
+{% if pagecnt %}
+<div class="row-fluid">
+    <div class="pagination pagination-large">
+        <ul>
+            {% if prepage %}
+                <li><a href="{{ uri }}&page={{ prepage }}">«</a></li>
+            {% endif %}
+            {% for itempage in pagelist %}
+                {% ifequal  page  itempage %}
+                    <li class="active" ><a href="javascript:void(0);">{{ itempage }}</a></li>
+                {% else %}
+                    <li><a href="{{ uri }}&page={{ itempage }}">{{ itempage }}</a></li>
+                {% endifequal %}
+            {% endfor %}
+            {% if nextpage %}
+                <li><a href="{{ uri }}&page={{ nextpage }}">»</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endif %}

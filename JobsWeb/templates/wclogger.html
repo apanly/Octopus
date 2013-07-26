@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block userlogin %}
+  {{ usertem }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid" style="margin: 41px 0 0 0 ;padding: 0 0 0 0 ;">
+ <div id="log"></div>
+ <div style="text-align: center;" class="well form-search">
+     Lines:<input id="lines" type="text"  value="{{line}}" placeholder="line number" class="input-medium"/>
+     Filter:<input id="fiter" type="text"  value="{{filter}}" placeholder="filter key words" class="input-medium"/>
+     <button class="btn" id="clearcls">清空</button>
+     <button class="btn" id="conns">手动连接</button>
+     <button class="btn" id="connoff">手动关闭 </button>
+ </div>
+</div>
+{% endblock %}
+{%block selfscript %}
+    <script src="/static/js/wclog.js"></script>
+<script type="text/javascript">
+     util.setHost('{{host}}');
+</script>
+{% endblock %}

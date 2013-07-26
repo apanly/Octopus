@@ -1,0 +1,15 @@
+Mon, 08 Jul 2013 12:29:58 p3.py[line:7] DEBUG This is debug message
+Mon, 08 Jul 2013 12:29:58 p3.py[line:8] INFO This is info message
+Mon, 08 Jul 2013 12:29:58 p3.py[line:9] WARNING This is warning message
+Mon, 08 Jul 2013 12:30:46 p3.py[line:7] DEBUG This is debug message
+Mon, 08 Jul 2013 12:30:46 p3.py[line:8] INFO This is info message
+Mon, 08 Jul 2013 12:30:46 p3.py[line:9] WARNING This is warning message
+Mon, 08 Jul 2013 12:32:13 p3.py[line:7] DEBUG This is debug message
+Mon, 08 Jul 2013 12:32:13 p3.py[line:8] INFO This is info message
+Mon, 08 Jul 2013 12:32:13 p3.py[line:9] WARNING This is warning message
+Mon, 08 Jul 2013 13:17:01 p3.py[line:7] DEBUG This is debug message
+Mon, 08 Jul 2013 13:17:01 p3.py[line:8] INFO This is info message
+Mon, 08 Jul 2013 13:17:01 p3.py[line:9] WARNING This is warning message
+Mon, 08 Jul 2013 13:17:17 p3.py[line:7] DEBUG This is debug message
+Mon, 08 Jul 2013 13:17:17 p3.py[line:8] INFO This is info message
+Mon, 08 Jul 2013 13:17:17 p3.py[line:9] WARNING This is warning message

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{%block selfstyle %}
+         <link href="/static/css/jquery-ui.custom.min.css" rel="stylesheet">
+{% endblock %}
+{% block userlogin %}
+  {{ usertem }}
+{% endblock %}
+{% block content %}
+<div class="container marginextra">
+    <div class="row-fluid">
+        <div class="span12">
+            <h2>
+               {% if jobinfo.id %}
+                 编辑Job
+               {% else %}
+                 新增Job
+               {% endif %}
+            </h2>
+            <hr class="bold">
+            <form class="form-horizontal well">
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">JOB名称</span><input type="text" id="jobname" placeholder="请输入job名称" value="{{ jobinfo.name }}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 给JOB一个精炼的名称。只是为了方便交流、管理</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行环境</span>
+                        <select id="jobenv">
+                            <option value="0">请选择运行环境</option>
+                            {% for item in envlist %}
+                                 {% ifequal jobinfo.server item.id %}
+                                    <option  selected value="{{ item.id }}">{{ item.env }}</option>
+                                 {% else %}
+                                     <option value="{{ item.id }}">{{ item.env }}</option>
+                                 {% endifequal %}
+                            {% endfor %}
+                        </select>
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 准确指定JOB的部署、运行环境，避免不同机器环境所产生的问题</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行服务器</span>
+                        <select id="jobserver">
+                            <option value="0">请选择服务器</option>
+                            {% for item in serverlist %}
+                                 {% ifequal jobinfo.server item.id %}
+                                    <option  selected value="{{ item.id }}">{{ item.name }}</option>
+                                 {% else %}
+                                     <option value="{{ item.id }}">{{ item.name }}</option>
+                                 {% endifequal %}
+                            {% endfor %}
+                        </select>
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 准确指定JOB的部署、运行机器，避免不同机器环境所产生的问题</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行命令</span><input type="text" id="command" value="{{ jobinfo.command}}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 注意路径问题</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">是否调度</span>
+                        <select id="is_manage">
+				<option {% ifequal jobinfo.is_manage 0 %} selected {% endifequal %} value="0">不需要</option>
+                       		<option {% ifequal jobinfo.is_manage 1 %} selected {% endifequal %} value="1">需要</option>
+                        </select>
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> JOB可以只是登记，但不会被调度</span>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行时间</span><input type="text" id="runtime" value="{{ jobinfo.job_first_start}}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 也是JOB正式生效、第一次调度时间</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行时长</span><input type="text" id="runrangetime" value="{{ jobinfo.job_runtime}}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font> 估计一下JOB大概到运行时间</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行间隔</span><input type="text" id="runpertime" value="{{ jobinfo.job_runinterval}}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"> 调度周期，下次调度时间</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">依赖JOB</span><input type="text" readonly id="dependjob" placeholder="填写依赖JOB的编号" value="{{ jobinfo.dependjobinfo }}">
+                        <span id="jobdependselect" class="add-on" style="background-color: #F5F5F5;border: none;"><a href="javascript:void(0);">请选择依赖job</a></span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">Cur地址</span><input type="text" id="curpath" placeholder="请输入游标地址" value="{{ jobinfo.curpath}}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">Log地址</span><input type="text" id="logpath" placeholder="请输入日志地址" value="{{ jobinfo.islog}}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">部门</span>
+                        <select id="belong">
+                            <option value="0">请选择所在部门</option>
+                            <option value="1"  {% ifequal jobinfo.site 1 %} selected {% endifequal %} >客户端</option>
+                            <option value="2" {% ifequal jobinfo.site 2 %} selected {% endifequal %}>用户端</option>
+                        </select>
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font></span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">负责人</span><input type="text" id="owner" placeholder="请输入job责任人" value="{{ jobinfo.ownerName}}">
+                        <input type="hidden" id="ownerid" value="{{ jobinfo.owner}}"/>
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font></span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">相关人</span><input type="text" id="relator" placeholder="请输入job相关人" value="{{ jobinfo.relateName}}">
+                        <input type="hidden" id="relatorid" value="{{ jobinfo.relate_owner}}"/>
+                         <span class="add-on tips" style="background-color: #F5F5F5;border: none;"><font color="red">*</font></span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">JOB作用</span><input type="text" id="jobpart" placeholder="请输入job作用" value="{{ jobinfo.effect }}">
+                        <span class="add-on tips" style="background-color: #F5F5F5;border: none;"> 填写逗号分隔的TAG，方便分类管理</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">备注信息</span><textarea rows="3" id="remark" placeholder=" 可以填写job作用等等备注内容">{{ jobinfo.remark }}</textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                        <input type="hidden" value="{{ jobinfo.id }}" id="jobid"/>
+                        <button id="addnewjob" class="btn btn-large" type="button" style="margin-left: 140px;width: 200px;">
+                            {% if jobinfo.id %}
+                 确认
+               {% else %}
+                 添加
+               {% endif %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{%block selfscript %}
+        <script src="/static/js/jquery-ui.custom.min.js"></script>
+        <script src="/static/js/jobnew.js"></script>
+{% endblock %}
+
+ <!--<div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">业务级别</span><select>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">运行级别</span><select>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <div class="controls input-prepend">
+                        <span class="add-on addonextra">是否有效</span><select>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                    </div>
+                </div>
+                -->
+
+
